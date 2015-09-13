@@ -38,13 +38,18 @@
     
     _bottomBar.visible = NO;
     _bottomBar.physicsBody.sensor = YES;
+
+    //the collision type set here will determine which callback is called
     _bottomBar.physicsBody.collisionType = @"bar";
     
     _circle.physicsBody.collisionType = @"circle";
     
     self.userInteractionEnabled = YES;
+    
+    //must set the delegate so when there is physics collision, this class is called.
     _physicsNode.collisionDelegate = self;
     
+    //setting sensor to YES means only detect collision but do not cause bounces
     _endGameSensor.physicsBody.sensor = YES;
     _endGameSensor.physicsBody.collisionType = @"endgame";
     
@@ -61,9 +66,11 @@
     
     int randomValue = [self getRandomIntFrom:-300 maxValue:300];
     
+    //Do not want the ball to go straight and updown
     while (randomValue > -50 && randomValue < 50)
         randomValue = [self getRandomIntFrom:-300 maxValue:300];
     
+    //Give the ball an initial push
     [_circle.physicsBody applyImpulse:ccp(randomValue, 250)];
 }
 
@@ -78,7 +85,7 @@
         _bottomBar.visible = NO;
     }];
     
-    //start timer
+    //start timer - after .2 seconds, the bar will disappear and allow ball to go through
     [self stopAllActions];
     [self runAction:[CCActionSequence actions:
                      [CCActionDelay actionWithDuration:.2],
@@ -86,7 +93,7 @@
                      nil]];
 }
 
-
+//detect bounce off the the bottom bar
 -(BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair *)pair circle:(CCNode *)circle bar:(CCNode *)bar
 {
     [circle.physicsBody applyImpulse:ccp(0, -100)];
